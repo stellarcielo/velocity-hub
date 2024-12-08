@@ -1,7 +1,7 @@
 {
   "id": "velocity-hub",
   "name": "Velocity-Hub",
-  "version": "0.1-SNAPSHOT",
+  "version": "1.0-SNAPSHOT",
   "authors": ["stellarcielo"],
   "dependencies": [],
   "main": "com.example.velocity-hub.VelocityHub",
