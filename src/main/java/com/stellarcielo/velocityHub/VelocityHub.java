@@ -20,7 +20,8 @@ import java.util.Optional;
 @Plugin(
         id = "velocity-hub",
         name = "velocity-hub",
-        version = "1.0-SNAPSHOT"
+        version = "0.1-SNAPSHOT",
+        authors = {"stellarcielo"}
 )
 public class VelocityHub {
 
@@ -31,6 +32,9 @@ public class VelocityHub {
     public VelocityHub(ProxyServer server, Logger logger) {
         this.server = server;
         this.logger = logger;
+
+        registerCommands();
+        logger.info("Command /hub has been registered!");
     }
 
     @Subscribe
