@@ -7,6 +7,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
+import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.command.SimpleCommand;
@@ -15,26 +16,65 @@ import net.kyori.adventure.text.Component;
 
 import org.slf4j.Logger;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Optional;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Plugin(
         id = "velocity-hub",
         name = "velocity-hub",
-        version = "0.1-SNAPSHOT",
+        version = "1.1-SNAPSHOT",
         authors = {"stellarcielo"}
 )
 public class VelocityHub {
 
     private final ProxyServer server;
     private final Logger logger;
+    private JsonObject config;
 
     @Inject
     public VelocityHub(ProxyServer server, Logger logger) {
         this.server = server;
         this.logger = logger;
 
+        loadConfig();
         registerCommands();
-        logger.info("Command /hub has been registered!");
+    }
+
+    private void loadConfig() {
+        File configFolder = new File("plugins/velocity-hub");
+        if (!configFolder.exists()) {
+            configFolder.mkdirs();
+        }
+
+        File configFile = new File(configFolder, "config.json");
+
+        if (!configFile.exists()) {
+            try (FileWriter writer = new FileWriter(configFile)){
+                JsonObject defaultConfig = new JsonObject();
+                defaultConfig.addProperty("hubServerName", "hub");
+                defaultConfig.addProperty("transferMessage", "Sending you to the hub!");
+                defaultConfig.addProperty("serverNotAvailableMessage", "The hub server is not available.");
+
+                writer.write(defaultConfig.toString());
+                this.config = defaultConfig;
+                logger.info("Default config created at " + configFile.getAbsolutePath());
+            } catch (IOException e) {
+                logger.error("Failed to create default config file!", e);
+            }
+        } else {
+            try (FileReader reader = new FileReader(configFile)) {
+                this.config = JsonParser.parseReader(reader).getAsJsonObject();
+                logger.info("Config loaded successfully from " + configFile.getAbsolutePath());
+            } catch (IOException e) {
+                logger.error("Failed to load config file!", e);
+            }
+        }
     }
 
     @Subscribe
@@ -43,14 +83,22 @@ public class VelocityHub {
     }
 
     public void registerCommands(){
-        server.getCommandManager().register("hub", new HubCommand(server));
+        server.getCommandManager().register(
+                server.getCommandManager().metaBuilder("hub").build(),
+                new HubCommand(server, config, logger)
+        );
+        logger.info("Command /hub has been registered!");
     }
 
     public static class HubCommand implements SimpleCommand {
         private final ProxyServer server;
+        private final JsonObject config;
+        private final Logger logger;
 
-        public HubCommand(ProxyServer server) {
+        public HubCommand(ProxyServer server, JsonObject config, Logger logger) {
             this.server = server;
+            this.config = config;
+            this.logger = logger;
         }
 
         @Override
@@ -64,16 +112,18 @@ public class VelocityHub {
 
             Player player = (Player) source;
 
-            Optional<String> hubServerName = Optional.of("hub");
+            String hubServerName = config.get("hubServerName").getAsString();
+            String transferMessage = config.get("transferMessage").getAsString();
+            String serverNotAvailableMessage = config.get("serverNotAvailableMessage").getAsString();
 
-            hubServerName.ifPresent(serverName -> {
-                server.getServer(serverName).ifPresentOrElse(serverInfo -> {
-                    player.createConnectionRequest(serverInfo).fireAndForget();
-                    player.sendMessage(Component.text("Sending you to the hub!"));
-                }, () -> {
-                    player.sendMessage(Component.text("The hub server is not available."));
-                });
+
+            server.getServer(hubServerName).ifPresentOrElse(serverInfo -> {
+                player.createConnectionRequest(serverInfo).fireAndForget();
+                player.sendMessage(Component.text(transferMessage));
+            }, () -> {
+                player.sendMessage(Component.text(serverNotAvailableMessage));
             });
+
         }
     }
 
