@@ -28,9 +28,10 @@ import com.google.gson.JsonParser;
 @Plugin(
         id = "velocity-hub",
         name = "velocity-hub",
-        version = "1.1-SNAPSHOT",
+        version = "1.2-SNAPSHOT",
         authors = {"stellarcielo"}
 )
+
 public class VelocityHub {
 
     private final ProxyServer server;
