@@ -28,7 +28,7 @@ import com.google.gson.JsonParser;
 @Plugin(
         id = "velocity-hub",
         name = "velocity-hub",
-        version = "1.2-SNAPSHOT",
+        version = "1.3-SNAPSHOT",
         authors = {"stellarcielo"}
 )
 
@@ -60,7 +60,7 @@ public class VelocityHub {
                 JsonObject defaultConfig = new JsonObject();
                 defaultConfig.addProperty("hubServerName", "hub");
                 defaultConfig.addProperty("transferMessage", "Sending you to the hub!");
-                defaultConfig.addProperty("alreadyConnectedMessage", "You are already connected to the ");
+                defaultConfig.addProperty("alreadyConnectedMessage", "You are already connected to the hub!");
                 defaultConfig.addProperty("serverNotAvailableMessage", "The hub server is not available.");
 
                 writer.write(defaultConfig.toString());
@@ -121,7 +121,7 @@ public class VelocityHub {
 
             player.getCurrentServer().ifPresentOrElse(currentServer -> {
                 if (currentServer.getServerInfo().getName().equalsIgnoreCase(hubServerName)) {
-                    player.sendMessage(Component.text(alreadyConnectedMessage + hubServerName + "!"));
+                    player.sendMessage(Component.text(alreadyConnectedMessage));
                 }  else {
                     server.getServer(hubServerName).ifPresentOrElse(serverInfo -> {
                         player.createConnectionRequest(serverInfo).fireAndForget();
@@ -133,7 +133,6 @@ public class VelocityHub {
             }, () -> {
                 player.sendMessage(Component.text("Unable to determine your current server."));
             });
-
         }
     }
 
