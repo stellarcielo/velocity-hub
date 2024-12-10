@@ -59,6 +59,7 @@ public class VelocityHub {
                 JsonObject defaultConfig = new JsonObject();
                 defaultConfig.addProperty("hubServerName", "hub");
                 defaultConfig.addProperty("transferMessage", "Sending you to the hub!");
+                defaultConfig.addProperty("alreadyConnectedMessage", "You are already connected to the ");
                 defaultConfig.addProperty("serverNotAvailableMessage", "The hub server is not available.");
 
                 writer.write(defaultConfig.toString());
@@ -113,15 +114,23 @@ public class VelocityHub {
             Player player = (Player) source;
 
             String hubServerName = config.get("hubServerName").getAsString();
+            String alreadyConnectedMessage = config.get("alreadyConnectedMessage").getAsString();
             String transferMessage = config.get("transferMessage").getAsString();
             String serverNotAvailableMessage = config.get("serverNotAvailableMessage").getAsString();
 
-
-            server.getServer(hubServerName).ifPresentOrElse(serverInfo -> {
-                player.createConnectionRequest(serverInfo).fireAndForget();
-                player.sendMessage(Component.text(transferMessage));
+            player.getCurrentServer().ifPresentOrElse(currentServer -> {
+                if (currentServer.getServerInfo().getName().equalsIgnoreCase(hubServerName)) {
+                    player.sendMessage(Component.text(alreadyConnectedMessage + hubServerName + "!"));
+                }  else {
+                    server.getServer(hubServerName).ifPresentOrElse(serverInfo -> {
+                        player.createConnectionRequest(serverInfo).fireAndForget();
+                        player.sendMessage(Component.text(transferMessage));
+                    }, () -> {
+                        player.sendMessage(Component.text(serverNotAvailableMessage));
+                    });
+                }
             }, () -> {
-                player.sendMessage(Component.text(serverNotAvailableMessage));
+                player.sendMessage(Component.text("Unable to determine your current server."));
             });
 
         }
