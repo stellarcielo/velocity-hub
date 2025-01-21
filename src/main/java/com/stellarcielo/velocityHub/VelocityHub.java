@@ -1,5 +1,7 @@
 package com.stellarcielo.velocityHub;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -28,7 +30,7 @@ import com.google.gson.JsonParser;
 @Plugin(
         id = "velocity-hub",
         name = "velocity-hub",
-        version = "1.3-SNAPSHOT",
+        version = "1.4-SNAPSHOT",
         authors = {"stellarcielo"}
 )
 
@@ -57,19 +59,21 @@ public class VelocityHub {
 
         if (!configFile.exists()) {
             try (FileWriter writer = new FileWriter(configFile)){
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 JsonObject defaultConfig = new JsonObject();
                 defaultConfig.addProperty("hubServerName", "hub");
                 defaultConfig.addProperty("transferMessage", "Sending you to the hub!");
                 defaultConfig.addProperty("alreadyConnectedMessage", "You are already connected to the hub!");
                 defaultConfig.addProperty("serverNotAvailableMessage", "The hub server is not available.");
 
-                writer.write(defaultConfig.toString());
+                writer.write(gson.toJson(defaultConfig));
                 this.config = defaultConfig;
                 logger.info("Default config created at " + configFile.getAbsolutePath());
             } catch (IOException e) {
                 logger.error("Failed to create default config file!", e);
             }
         } else {
+
             try (FileReader reader = new FileReader(configFile)) {
                 this.config = JsonParser.parseReader(reader).getAsJsonObject();
                 logger.info("Config loaded successfully from " + configFile.getAbsolutePath());
