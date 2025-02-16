@@ -39,6 +39,7 @@ public class VelocityHub {
     private final ProxyServer server;
     private final Logger logger;
     private JsonObject config;
+    @Inject
     private final Metrics.Factory metricsFactory;
 
     @Inject
@@ -147,6 +148,7 @@ public class VelocityHub {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        Metrics metrics = metricsFactory.make(this, 24768);
+        final int pluginId = 24768;
+        final Metrics metrics = metricsFactory.make(this, pluginId);
     }
 }
