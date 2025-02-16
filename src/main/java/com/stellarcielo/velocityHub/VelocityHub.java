@@ -9,12 +9,13 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
-import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.command.SimpleCommand;
 
 import net.kyori.adventure.text.Component;
+
+import org.bstats.velocity.Metrics;
 
 import org.slf4j.Logger;
 
@@ -22,7 +23,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Optional;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -30,7 +30,7 @@ import com.google.gson.JsonParser;
 @Plugin(
         id = "velocity-hub",
         name = "velocity-hub",
-        version = "1.4-SNAPSHOT",
+        version = "1.5-SNAPSHOT",
         authors = {"stellarcielo"}
 )
 
@@ -39,11 +39,16 @@ public class VelocityHub {
     private final ProxyServer server;
     private final Logger logger;
     private JsonObject config;
+    private final Metrics.Factory metricsFactory;
 
     @Inject
-    public VelocityHub(ProxyServer server, Logger logger) {
+    public VelocityHub(ProxyServer server, Logger logger, Metrics.Factory metricsFactory) {
         this.server = server;
         this.logger = logger;
+        this.metricsFactory = metricsFactory;
+
+
+        logger.info("bStats has been initialized.");
 
         loadConfig();
         registerCommands();
@@ -140,6 +145,8 @@ public class VelocityHub {
         }
     }
 
+    @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
+        Metrics metrics = metricsFactory.make(this, 24768);
     }
 }
