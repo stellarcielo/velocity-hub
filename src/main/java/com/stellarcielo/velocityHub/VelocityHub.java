@@ -19,10 +19,11 @@ import org.bstats.velocity.Metrics;
 
 import org.slf4j.Logger;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -30,7 +31,7 @@ import com.google.gson.JsonParser;
 @Plugin(
         id = "velocity-hub",
         name = "velocity-hub",
-        version = "1.5-SNAPSHOT",
+        version = "1.6-SNAPSHOT",
         authors = {"stellarcielo"}
 )
 
@@ -44,6 +45,8 @@ public class VelocityHub {
 
     @Inject
     public VelocityHub(ProxyServer server, Logger logger, Metrics.Factory metricsFactory) {
+        VersionChecker.checkForUpdate();
+
         this.server = server;
         this.logger = logger;
         this.metricsFactory = metricsFactory;
