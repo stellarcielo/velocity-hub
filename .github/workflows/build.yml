@@ -59,7 +59,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN}}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.get_url.outputs.upload_url }}
           asset_path: target/velocity-hub-1.6-SNAPSHOT.jar
           asset_name: velocity-hub-1.6-SNAPSHOT.jar
           asset_content_type: application/java-archive
