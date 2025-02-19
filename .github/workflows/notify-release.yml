@@ -14,7 +14,7 @@ jobs:
 
       - name: Github Release Notification
         env:
-          TOKEN: ${{ secrets.TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.TOKEN}}
         run: |
           echo "New version released."
           curl -X POST -H "Authorization : token ${TOKEN}" \
