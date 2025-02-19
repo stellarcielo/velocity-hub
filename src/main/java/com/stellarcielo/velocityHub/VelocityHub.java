@@ -43,9 +43,24 @@ public class VelocityHub {
     @Inject
     private final Metrics.Factory metricsFactory;
 
+    @Subscribe
+    public void onProxyInitialization(ProxyInitializeEvent event) {
+        logger.info("Velocity-hub plugin initialized");
+
+        final int pluginId = 24768;
+        final Metrics metrics = metricsFactory.make(this, pluginId);
+
+        String githubToken = System.getenv("GITHUB_TOKEN");
+        if (githubToken == null) {
+            GitHubReleaseChecker releaseChecker = new GitHubReleaseChecker();
+            releaseChecker.checkForNewRelease();
+        } else {
+            logger.warn("No GitHub token is set. Release checks will be skipped...");
+        }
+    }
+
     @Inject
     public VelocityHub(ProxyServer server, Logger logger, Metrics.Factory metricsFactory) {
-        VersionChecker.checkForUpdate();
 
         this.server = server;
         this.logger = logger;
@@ -149,9 +164,5 @@ public class VelocityHub {
         }
     }
 
-    @Subscribe
-    public void onProxyInitialization(ProxyInitializeEvent event) {
-        final int pluginId = 24768;
-        final Metrics metrics = metricsFactory.make(this, pluginId);
-    }
+
 }
