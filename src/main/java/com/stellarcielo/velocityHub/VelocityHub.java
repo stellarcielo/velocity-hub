@@ -52,7 +52,7 @@ public class VelocityHub {
 
         String githubToken = System.getenv("GITHUB_TOKEN");
         if (githubToken == null) {
-            GitHubReleaseChecker releaseChecker = new GitHubReleaseChecker();
+            GitHubReleaseChecker releaseChecker = new GitHubReleaseChecker(githubToken, "stellarcielo", "velocity-hub", logger);
             releaseChecker.checkForNewRelease();
         } else {
             logger.warn("No GitHub token is set. Release checks will be skipped...");
