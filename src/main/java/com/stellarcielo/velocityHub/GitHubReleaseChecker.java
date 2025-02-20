@@ -35,11 +35,12 @@ public class GitHubReleaseChecker {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful() && response.body() != null) {
                 String latestVersion = parseVersion(response.body().string());
-                logger.info("Latest version: " + latestVersion + " Current version: " + CURRENT_VERSION + "responce" + response.body().string());
+                logger.info("Latest version: " + latestVersion + " Current version: " + CURRENT_VERSION);
                 if (CURRENT_VERSION.equals(latestVersion)) {
                     logger.info("The latest version is used");
                 } else{
                     logger.info("New release version: " + latestVersion);
+                    logger.info("Current version: " + CURRENT_VERSION);
                 }
             } else {
                 logger.warn("Failed to get release info: "+ response.code());
@@ -55,8 +56,7 @@ public class GitHubReleaseChecker {
             int start = index + 12;
             int end = jsonResponce.indexOf("\"", start);
             return jsonResponce.substring(start, end);
-        } else{
-            return CURRENT_VERSION;
         }
+        return CURRENT_VERSION;
     }
 }
