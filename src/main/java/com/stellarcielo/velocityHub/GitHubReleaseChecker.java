@@ -15,7 +15,7 @@ public class GitHubReleaseChecker {
     private final String clientSecret;
     private final Logger logger;
 
-    private static final String CURRENT_VERSION = "1.6-SNAPSHOT";
+    private static final String CURRENT_VERSION = "v1.6-SNAPSHOT";
 
     public GitHubReleaseChecker(String repoOwner, String repoName, String clientId, String clientSecret,  Logger logger) {
         this.repoOwner = repoOwner;
@@ -35,7 +35,7 @@ public class GitHubReleaseChecker {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful() && response.body() != null) {
                 String latestVersion = parseVersion(response.body().string());
-                logger.info("Latest version: " + latestVersion + " Current version: " + CURRENT_VERSION);
+                //logger.info("Latest version: " + latestVersion + " Current version: " + CURRENT_VERSION);
                 if (CURRENT_VERSION.equals(latestVersion)) {
                     logger.info("The latest version is used");
                 } else{
