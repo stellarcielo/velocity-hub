@@ -15,6 +15,8 @@ public class GitHubReleaseChecker {
     private final String clientSecret;
     private final Logger logger;
 
+    private static final String CURRENT_VERSION = "1.6-SNAPSHOT";
+
     public GitHubReleaseChecker(String repoOwner, String repoName, String clientId, String clientSecret,  Logger logger) {
         this.repoOwner = repoOwner;
         this.repoName = repoName;
@@ -32,8 +34,12 @@ public class GitHubReleaseChecker {
 
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful() && response.body() != null) {
-                String responseBody = response.body().toString();
-                logger.info("New release info: "+ responseBody);
+                String latestVersion = parseVersion(response.body().string());
+                if (CURRENT_VERSION.equals(latestVersion)) {
+                    logger.info("New release version: " + latestVersion);
+                } else{
+                    logger.info("The latest version is used");
+                }
             } else {
                 logger.warn("Failed to get release info: "+ response.code());
             }
@@ -42,4 +48,13 @@ public class GitHubReleaseChecker {
         }
     }
 
+    private static String parseVersion(String jsonResponce) {
+        int index = jsonResponce.indexOf("\"tag_name\":\"");
+        if (index != -1) {
+            int start = index + 12;
+            int end = jsonResponce.indexOf("\"", start);
+            return jsonResponce.substring(start, end);
+        }
+        return CURRENT_VERSION;
+    }
 }
