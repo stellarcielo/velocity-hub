@@ -36,9 +36,9 @@ public class GitHubReleaseChecker {
             if (response.isSuccessful() && response.body() != null) {
                 String latestVersion = parseVersion(response.toString());
                 if (CURRENT_VERSION.equals(latestVersion)) {
-                    logger.info("New release version: " + latestVersion);
-                } else{
                     logger.info("The latest version is used");
+                } else{
+                    logger.info("New release version: " + latestVersion);
                 }
             } else {
                 logger.warn("Failed to get release info: "+ response.code());
