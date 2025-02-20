@@ -9,23 +9,26 @@ import java.io.IOException;
 
 public class GitHubReleaseChecker {
 
-    private final String githubToken;
     private final String repoOwner;
     private final String repoName;
+    private final String clientId;
+    private final String clientSecret;
     private final Logger logger;
 
-    public GitHubReleaseChecker(String githubToken, String repoOwner, String repoName, Logger logger) {
-        this.githubToken = githubToken;
+    public GitHubReleaseChecker(String repoOwner, String repoName, String clientId, String clientSecret,  Logger logger) {
         this.repoOwner = repoOwner;
         this.repoName = repoName;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
         this.logger = logger;
+
     }
 
     public void checkForNewRelease() {
         OkHttpClient client = new OkHttpClient();
-        String url = String.format("https://api.github.com/repos/%s/%s/releases", repoOwner, repoName);
+        String url = String.format("https://api.github.com/repos/%s/%s/releases?&client_id=\"%s\"&client_secret=\"%s\"", repoOwner, repoName, clientId, clientSecret);
 
-        Request request = new Request.Builder().url(url).addHeader("Authorization", "token " + githubToken).build();
+        Request request = new Request.Builder().url(url).build();
 
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful() && response.body() != null) {

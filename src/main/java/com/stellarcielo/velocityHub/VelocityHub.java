@@ -50,9 +50,9 @@ public class VelocityHub {
         final int pluginId = 24768;
         final Metrics metrics = metricsFactory.make(this, pluginId);
 
-        String githubToken = System.getenv("GITHUB_TOKEN");
+        String githubToken = System.getenv("OAUTHAPP_TOKEN");
         if (githubToken == null) {
-            GitHubReleaseChecker releaseChecker = new GitHubReleaseChecker(githubToken, "stellarcielo", "velocity-hub", logger);
+            GitHubReleaseChecker releaseChecker = new GitHubReleaseChecker("stellarcielo", "velocity-hub", "Ov23lieLh7UXSOk9mMCL", githubToken, logger);
             releaseChecker.checkForNewRelease();
         } else {
             logger.warn("No GitHub token is set. Release checks will be skipped...");
