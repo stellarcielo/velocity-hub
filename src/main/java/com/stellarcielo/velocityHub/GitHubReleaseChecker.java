@@ -28,7 +28,7 @@ public class GitHubReleaseChecker {
 
     public void checkForNewRelease() {
         OkHttpClient client = new OkHttpClient();
-        String url = String.format("https://api.github.com/repos/%s/%s/releases?&client_id=\"%s\"&client_secret=\"%s\"", repoOwner, repoName, clientId, clientSecret);
+        String url = String.format("https://api.github.com/repos/%s/%s/releases/latest?&client_id=\"%s\"&client_secret=\"%s\"", repoOwner, repoName, clientId, clientSecret);
 
         Request request = new Request.Builder().url(url).build();
 
