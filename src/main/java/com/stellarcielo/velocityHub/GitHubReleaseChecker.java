@@ -15,7 +15,7 @@ public class GitHubReleaseChecker {
     private final String clientSecret;
     private final Logger logger;
 
-    private static final String CURRENT_VERSION = "v1.6-SNAPSHOT";
+    private static final String CURRENT_VERSION = "v1.7-SNAPSHOT";
 
     public GitHubReleaseChecker(String repoOwner, String repoName, String clientId, String clientSecret,  Logger logger) {
         this.repoOwner = repoOwner;
