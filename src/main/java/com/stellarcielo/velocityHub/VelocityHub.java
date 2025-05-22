@@ -14,16 +14,13 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.command.SimpleCommand;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import org.bstats.velocity.Metrics;
 
 import org.slf4j.Logger;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -31,7 +28,7 @@ import com.google.gson.JsonParser;
 @Plugin(
         id = "velocity-hub",
         name = "velocity-hub",
-        version = "1.6-SNAPSHOT",
+        version = "1.7-SNAPSHOT",
         authors = {"stellarcielo"}
 )
 
@@ -125,6 +122,8 @@ public class VelocityHub {
         private final JsonObject config;
         private final Logger logger;
 
+        private static final MiniMessage miniMessage = MiniMessage.miniMessage();
+
         public HubCommand(ProxyServer server, JsonObject config, Logger logger) {
             this.server = server;
             this.config = config;
@@ -149,20 +148,23 @@ public class VelocityHub {
 
             player.getCurrentServer().ifPresentOrElse(currentServer -> {
                 if (currentServer.getServerInfo().getName().equalsIgnoreCase(hubServerName)) {
-                    player.sendMessage(Component.text(alreadyConnectedMessage));
+                    sendMiniMessage(player, alreadyConnectedMessage);
                 }  else {
                     server.getServer(hubServerName).ifPresentOrElse(serverInfo -> {
                         player.createConnectionRequest(serverInfo).fireAndForget();
-                        player.sendMessage(Component.text(transferMessage));
+                        sendMiniMessage(player, transferMessage);
                     }, () -> {
-                        player.sendMessage(Component.text(serverNotAvailableMessage));
+                        sendMiniMessage(player, serverNotAvailableMessage);
                     });
                 }
             }, () -> {
-                player.sendMessage(Component.text("Unable to determine your current server."));
+                sendMiniMessage(player, "<red>Unable to determine your current server.");
             });
         }
+
+        public static void sendMiniMessage(Player player, String miniMassageText) {
+            Component message = miniMessage.deserialize(miniMassageText);
+            player.sendMessage(player, message);
+        }
     }
-
-
 }
