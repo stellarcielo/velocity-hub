@@ -34,8 +34,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN}}
         with:
-          tag_name: 'v1.6-SNAPSHOT'
-          release_name: 'v1.6-SNAPSHOT'
+          tag_name: 'v1.7-SNAPSHOT'
+          release_name: 'v1.7-SNAPSHOT'
           draft: false
           prerelease: false
 
