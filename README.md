@@ -1,6 +1,6 @@
 The velocity-hub plugin adds the /hub command to the velocity network for easy return if a hub server or similar is present.Simply add it to the velocity server and the /hub command will run on all connected servers!  
   
-The game version is for all versions supported by Velocity 3.4.0-SNAPSHOT as it is added to the proxy server only. The game version must be specified and is specified, but see the [PaperMC website](https://docs.papermc.io/velocity) for details.
+The game version is for all versions supported by Velocity 3.4.0-SNAPSHOT as it is added to the proxy server only. The game version must be specified and is specified, but see the [PaperMC website]([https://docs.papermc.io/velocity](https://docs.papermc.io/velocity/server-compatibility/)) for details.
 # Installation
 1. Download the latest release of the plugin
 2. Put velocity-hub-x.x-SNAPSHOT.jar in /plugins directory of velocity
