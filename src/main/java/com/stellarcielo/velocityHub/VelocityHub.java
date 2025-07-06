@@ -28,7 +28,7 @@ import com.google.gson.JsonParser;
 @Plugin(
         id = "velocity-hub",
         name = "velocity-hub",
-        version = "1.7-SNAPSHOT",
+        version = "1.8-SNAPSHOT",
         authors = {"stellarcielo"}
 )
 
@@ -47,13 +47,8 @@ public class VelocityHub {
         final int pluginId = 24768;
         final Metrics metrics = metricsFactory.make(this, pluginId);
 
-        String githubToken = System.getenv("OAUTHAPP_TOKEN");
-        if (githubToken == null) {
-            GitHubReleaseChecker releaseChecker = new GitHubReleaseChecker("stellarcielo", "velocity-hub", "Ov23lieLh7UXSOk9mMCL", githubToken, logger);
-            releaseChecker.checkForNewRelease();
-        } else {
-            logger.warn("No GitHub token is set. Release checks will be skipped...");
-        }
+        VChecker checker = new VChecker("velocity-hub-command", "1.8-SNAPSHOT",logger);
+        checker.checkForNewRelease();
     }
 
     @Inject
@@ -62,7 +57,6 @@ public class VelocityHub {
         this.server = server;
         this.logger = logger;
         this.metricsFactory = metricsFactory;
-
 
         logger.info("bStats has been initialized.");
 
