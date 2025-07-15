@@ -43,7 +43,7 @@ public class VChecker {
                         if (!currentVersion.equals(versionNumber)) {
                             logger.warn("New version available :" + versionNumber);
                             logger.warn("Current version : " + currentVersion);
-                            logger.warn("Download : https://modrinth.com/plugin/velocity-hub-command/version/" + versionNumber);
+                            logger.warn("Download : https://modrinth.com/plugin/" + project_id + "/version/" + versionNumber);
                         } else {
                             logger.info("Latest version used.");
                         }
