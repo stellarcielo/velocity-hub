@@ -11,14 +11,14 @@ import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 
-public class VChecker {
+public class versionChecker {
 
     private final String project_id;
     private final Logger logger;
 
     private final String currentVersion;
 
-    public VChecker(String project_id, String currentVersion, Logger logger) {
+    public versionChecker(String project_id, String currentVersion, Logger logger) {
         this.project_id = project_id;
         this.currentVersion = currentVersion;
         this.logger = logger;

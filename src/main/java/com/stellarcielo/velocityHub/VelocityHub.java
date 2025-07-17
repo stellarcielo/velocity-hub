@@ -47,7 +47,7 @@ public class VelocityHub {
         final int pluginId = 24768;
         final Metrics metrics = metricsFactory.make(this, pluginId);
 
-        VChecker checker = new VChecker("velocity-hub-command", "1.8-SNAPSHOT",logger);
+        versionChecker checker = new versionChecker("velocity-hub-command", "1.8-SNAPSHOT",logger);
         checker.checkForNewRelease();
     }
 
