@@ -105,10 +105,10 @@ public class VelocityHub {
 
     public void registerCommands(){
         server.getCommandManager().register(
-                server.getCommandManager().metaBuilder("hub").build(),
+                server.getCommandManager().metaBuilder("hub").aliases("lobby").build(),
                 new HubCommand(server, config, logger)
         );
-        logger.info("Command /hub has been registered!");
+        logger.info("Commands /hub and /lobby have been registered!");
     }
 
     public static class HubCommand implements SimpleCommand {
