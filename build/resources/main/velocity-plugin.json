@@ -1,0 +1,6 @@
+{
+  "id": "velocity-hub",
+  "name": "velocity-hub",
+  "version": "1.9-SNAPSHOT",
+  "main": "com.stellarcielo.velocityHub.VelocityHub"
+}

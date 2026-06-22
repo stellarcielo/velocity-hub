@@ -28,14 +28,15 @@ import com.google.gson.JsonParser;
 @Plugin(
         id = "velocity-hub",
         name = "velocity-hub",
-        version = "1.8-SNAPSHOT",
+        version = "1.9-SNAPSHOT",
         authors = {"stellarcielo"}
 )
 
 public class VelocityHub {
 
+    @Inject
+    private Logger logger;
     private final ProxyServer server;
-    private final Logger logger;
     private JsonObject config;
     @Inject
     private final Metrics.Factory metricsFactory;
@@ -53,12 +54,9 @@ public class VelocityHub {
 
     @Inject
     public VelocityHub(ProxyServer server, Logger logger, Metrics.Factory metricsFactory) {
-
         this.server = server;
         this.logger = logger;
         this.metricsFactory = metricsFactory;
-
-        logger.info("bStats has been initialized.");
 
         loadConfig();
         registerCommands();
