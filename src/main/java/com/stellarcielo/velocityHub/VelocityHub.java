@@ -28,7 +28,7 @@ import com.google.gson.JsonParser;
 @Plugin(
         id = "velocity-hub",
         name = "velocity-hub",
-        version = "1.9-SNAPSHOT",
+        version = "1.10-SNAPSHOT",
         authors = {"stellarcielo"}
 )
 
@@ -156,7 +156,7 @@ public class VelocityHub {
 
         public static void sendMiniMessage(Player player, String miniMassageText) {
             Component message = miniMessage.deserialize(miniMassageText);
-            player.sendMessage(player, message);
+            player.sendMessage(message);
         }
     }
 }
