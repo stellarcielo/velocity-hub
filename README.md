@@ -10,6 +10,13 @@ The game version is for all versions supported by Velocity 4.1.0-SNAPSHOT as it 
 This completes the process!  
 
 **Starting with version 1.10-SNAPSHOT, Java 25 or later must be installed.**
+## Download here↓
+- [modrinth](https://modrinth.com/plugin/velocity-hub-command/versions)(Recommended)
+- [Github](https://github.com/stellarcielo/velocity-hub/releases)
+- [Hangar](https://hangar.papermc.io/stellarcielo/velocity-hub-command)
+- [CurseForge](https://www.curseforge.com/minecraft/bukkit-plugins/velocity-hub-command)
+
+The sites listed above are projects managed by the developer.
 # Config reference
 - hubServerName  
 Specify the destination server. **This is the server name listed in servers in velocity.toml.** (Usually, the hubServerName is the same as the server name listed in the try=[] brackets.)  
