@@ -1,29 +1,27 @@
 package com.stellarcielo.velocityHub;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
+import com.velocitypowered.api.proxy.ConnectionRequestBuilder;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.command.SimpleCommand;
 
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import org.bstats.velocity.Metrics;
 
 import org.slf4j.Logger;
 
-import java.io.*;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import java.nio.file.Path;
+import java.util.Optional;
 
 @Plugin(
         id = "velocity-hub",
@@ -34,12 +32,18 @@ import com.google.gson.JsonParser;
 
 public class VelocityHub {
 
-    @Inject
-    private Logger logger;
+    private final Logger logger;
     private final ProxyServer server;
-    private JsonObject config;
-    @Inject
+    private final Path dataDirectory;
     private final Metrics.Factory metricsFactory;
+
+    @Inject
+    public VelocityHub(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory, Metrics.Factory metricsFactory) {
+        this.server = server;
+        this.logger = logger;
+        this.dataDirectory = dataDirectory;
+        this.metricsFactory = metricsFactory;
+    }
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
@@ -48,52 +52,14 @@ public class VelocityHub {
         final int pluginId = 24768;
         final Metrics metrics = metricsFactory.make(this, pluginId);
 
-        versionChecker checker = new versionChecker("velocity-hub-command", "1.10-SNAPSHOT",logger);
+        PluginConfig config = PluginConfig.load(dataDirectory, logger);
+        registerCommands(config);
+
+        String currentVersion = server.getPluginManager().fromInstance(this)
+                .flatMap(container -> container.getDescription().getVersion())
+                .orElse("unknown");
+        VersionChecker checker = new VersionChecker("velocity-hub-command", currentVersion, logger);
         checker.checkForNewRelease();
-    }
-
-    @Inject
-    public VelocityHub(ProxyServer server, Logger logger, Metrics.Factory metricsFactory) {
-        this.server = server;
-        this.logger = logger;
-        this.metricsFactory = metricsFactory;
-
-        loadConfig();
-        registerCommands();
-    }
-
-    private void loadConfig() {
-        File configFolder = new File("plugins/velocity-hub");
-        if (!configFolder.exists()) {
-            configFolder.mkdirs();
-        }
-
-        File configFile = new File(configFolder, "config.json");
-
-        if (!configFile.exists()) {
-            try (FileWriter writer = new FileWriter(configFile)){
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                JsonObject defaultConfig = new JsonObject();
-                defaultConfig.addProperty("hubServerName", "hub");
-                defaultConfig.addProperty("transferMessage", "Sending you to the hub!");
-                defaultConfig.addProperty("alreadyConnectedMessage", "You are already connected to the hub!");
-                defaultConfig.addProperty("serverNotAvailableMessage", "The hub server is not available.");
-
-                writer.write(gson.toJson(defaultConfig));
-                this.config = defaultConfig;
-                logger.info("Default config created at " + configFile.getAbsolutePath());
-            } catch (IOException e) {
-                logger.error("Failed to create default config file!", e);
-            }
-        } else {
-
-            try (FileReader reader = new FileReader(configFile)) {
-                this.config = JsonParser.parseReader(reader).getAsJsonObject();
-                logger.info("Config loaded successfully from " + configFile.getAbsolutePath());
-            } catch (IOException e) {
-                logger.error("Failed to load config file!", e);
-            }
-        }
     }
 
     @Subscribe
@@ -101,7 +67,7 @@ public class VelocityHub {
         logger.info("Player {} has logged in!", event.getPlayer().getUsername());
     }
 
-    public void registerCommands(){
+    private void registerCommands(PluginConfig config) {
         server.getCommandManager().register(
                 server.getCommandManager().metaBuilder("hub").aliases("lobby").build(),
                 new HubCommand(server, config, logger)
@@ -111,12 +77,12 @@ public class VelocityHub {
 
     public static class HubCommand implements SimpleCommand {
         private final ProxyServer server;
-        private final JsonObject config;
+        private final PluginConfig config;
         private final Logger logger;
 
         private static final MiniMessage miniMessage = MiniMessage.miniMessage();
 
-        public HubCommand(ProxyServer server, JsonObject config, Logger logger) {
+        public HubCommand(ProxyServer server, PluginConfig config, Logger logger) {
             this.server = server;
             this.config = config;
             this.logger = logger;
@@ -126,37 +92,50 @@ public class VelocityHub {
         public void execute(Invocation invocation) {
             CommandSource source = invocation.source();
 
-            if(!(source instanceof Player)){
-                source.sendMessage(Component.text("Only players can execute this command!"));
+            if (!(source instanceof Player player)) {
+                sendMiniMessage(source, config.playerOnlyMessage());
                 return;
             }
 
-            Player player = (Player) source;
+            String hubServerName = config.hubServerName();
 
-            String hubServerName = config.get("hubServerName").getAsString();
-            String alreadyConnectedMessage = config.get("alreadyConnectedMessage").getAsString();
-            String transferMessage = config.get("transferMessage").getAsString();
-            String serverNotAvailableMessage = config.get("serverNotAvailableMessage").getAsString();
+            Optional<RegisteredServer> hubServer = server.getServer(hubServerName);
+            if (hubServer.isEmpty()) {
+                logger.warn("Hub server \"{}\" is not registered in velocity.toml. Check hubServerName in config.json.", hubServerName);
+                sendMiniMessage(player, config.serverNotAvailableMessage());
+                return;
+            }
 
-            player.getCurrentServer().ifPresentOrElse(currentServer -> {
-                if (currentServer.getServerInfo().getName().equalsIgnoreCase(hubServerName)) {
-                    sendMiniMessage(player, alreadyConnectedMessage);
-                }  else {
-                    server.getServer(hubServerName).ifPresentOrElse(serverInfo -> {
-                        player.createConnectionRequest(serverInfo).fireAndForget();
-                        sendMiniMessage(player, transferMessage);
-                    }, () -> {
-                        sendMiniMessage(player, serverNotAvailableMessage);
-                    });
+            boolean alreadyOnHub = player.getCurrentServer()
+                    .map(currentServer -> currentServer.getServerInfo().getName().equalsIgnoreCase(hubServerName))
+                    .orElse(false);
+            if (alreadyOnHub) {
+                sendMiniMessage(player, config.alreadyConnectedMessage());
+                return;
+            }
+
+            sendMiniMessage(player, config.transferMessage());
+
+            player.createConnectionRequest(hubServer.get()).connect().whenComplete((result, throwable) -> {
+                if (throwable != null) {
+                    logger.warn("Failed to send {} to the hub server \"{}\"", player.getUsername(), hubServerName, throwable);
+                    sendMiniMessage(player, config.serverNotAvailableMessage());
+                    return;
                 }
-            }, () -> {
-                sendMiniMessage(player, "<red>Unable to determine your current server.");
+
+                ConnectionRequestBuilder.Status status = result.getStatus();
+                if (status == ConnectionRequestBuilder.Status.ALREADY_CONNECTED) {
+                    sendMiniMessage(player, config.alreadyConnectedMessage());
+                } else if (status == ConnectionRequestBuilder.Status.CONNECTION_CANCELLED
+                        || status == ConnectionRequestBuilder.Status.SERVER_DISCONNECTED) {
+                    sendMiniMessage(player, config.serverNotAvailableMessage());
+                }
+                // SUCCESS and CONNECTION_IN_PROGRESS need no extra message
             });
         }
 
-        public static void sendMiniMessage(Player player, String miniMassageText) {
-            Component message = miniMessage.deserialize(miniMassageText);
-            player.sendMessage(message);
+        public static void sendMiniMessage(CommandSource source, String miniMessageText) {
+            source.sendMessage(miniMessage.deserialize(miniMessageText));
         }
     }
 }
