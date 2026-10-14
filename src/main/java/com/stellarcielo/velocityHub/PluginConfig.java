@@ -105,7 +105,7 @@ public final class PluginConfig {
                 json.addProperty(key, entry.getValue());
                 values.put(key, entry.getValue());
                 addedKeys.add(key);
-            } else if (element.isJsonPrimitive()) {
+            } else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
                 values.put(key, element.getAsString());
             } else {
                 logger.warn("Config value \"{}\" must be a string. The default value is used instead.", key);
