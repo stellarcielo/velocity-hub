@@ -33,8 +33,12 @@ Sets the message to be sent to the player who used the command during the transf
 - alreadyConnectedMessage  
 Sets the message if the player using the command is on the server designated as the forwarding destination.
 - serverNotAvailableMessage  
-Sets the message when the specified server is unavailable.
+Sets the message when the specified server is unavailable or the transfer failed.
+- playerOnlyMessage  
+Sets the message when the command is executed from the console.
+
+If a setting is missing from config.json (for example after updating the plugin), it is added automatically with its default value.
 
 # Issue and question
-If the plugin does not work properly, try deleting config.json.  
+If the plugin does not work properly, check the server log for config errors. If the problem persists, try deleting config.json.  
 Problems and questions feature request [here](https://github.com/stellarcielo/velocity-hub/issues).
