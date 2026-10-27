@@ -26,7 +26,7 @@ import java.util.Optional;
 @Plugin(
         id = "velocity-hub",
         name = "velocity-hub",
-        version = "1.10-SNAPSHOT",
+        version = "1.11-SNAPSHOT",
         authors = {"stellarcielo"}
 )
 
