@@ -18,24 +18,20 @@ This completes the process!
 
 The sites listed above are projects managed by the developer.
 # Config reference
-- hubServerName  
-Specify the destination server. **This is the server name listed in servers in velocity.toml.** (Usually, the hubServerName is the same as the server name listed in the try=[] brackets.)  
+| Key | Default | Description |
+| --- | --- | --- |
+| `hubServerName` | `hub` | The destination server. **This is the server name listed in servers in velocity.toml.** (Usually the same as the server name listed in the `try=[]` brackets.) |
+| `transferMessage` | `Sending you to the hub!` | Sent to the player who used the command during the transfer. |
+| `alreadyConnectedMessage` | `You are already connected to the hub!` | Sent when the player is already on the destination server. |
+| `serverNotAvailableMessage` | `The hub server is not available.` | Sent when the destination server is unavailable or the transfer failed. |
+| `playerOnlyMessage` | `Only players can execute this command!` | Sent when the command is executed from the console. |
 
 ### Message custom
 We support Japanese, Russian, and other languages. If there are any languages that we do not support, please let us know via GitHub issue!  
-MiniMessage is supported. If you write like `<red>hub`
-, it will be displayed in red. See [here](https://docs.papermc.io/misc/tools/minimessage-web-editor) for details.  
+MiniMessage is supported in all message settings. If you write like `<red>hub`, it will be displayed in red. See [here](https://docs.papermc.io/misc/tools/minimessage-web-editor) for details.  
 You can test the display at the following sites.  
 [https://webui.advntr.dev/](https://webui.advntr.dev/)  
 [https://minecraft.menu/minecraft-rgb-generator](https://minecraft.menu/minecraft-rgb-generator)  
-- transferMessage  
-Sets the message to be sent to the player who used the command during the transfer.
-- alreadyConnectedMessage  
-Sets the message if the player using the command is on the server designated as the forwarding destination.
-- serverNotAvailableMessage  
-Sets the message when the specified server is unavailable or the transfer failed.
-- playerOnlyMessage  
-Sets the message when the command is executed from the console.
 
 If a setting is missing from config.json (for example after updating the plugin), it is added automatically with its default value.
 
