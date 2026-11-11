@@ -18,13 +18,14 @@ This completes the process!
 
 The sites listed above are projects managed by the developer.
 # Config reference
-| Key | Default | Description |
-| --- | --- | --- |
-| `hubServerName` | `hub` | The destination server. **This is the server name listed in servers in velocity.toml.** (Usually the same as the server name listed in the `try=[]` brackets.) |
-| `transferMessage` | `Sending you to the hub!` | Sent to the player who used the command during the transfer. |
-| `alreadyConnectedMessage` | `You are already connected to the hub!` | Sent when the player is already on the destination server. |
-| `serverNotAvailableMessage` | `The hub server is not available.` | Sent when the destination server is unavailable or the transfer failed. |
-| `playerOnlyMessage` | `Only players can execute this command!` | Sent when the command is executed from the console. |
+| Key | Default                                  | Description                                                                                                                                                  |
+| --- |------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `hubServerName` | `hub`                                    | The destination server. **This is the server name listed in servers in velocity.toml.** (Usually the same as the server name listed in the `try=[]` brackets.) |
+| `useLobbyAlias` | `true `\|` false`                        | Use ""lobby" as an alias to "/hub" |
+| `transferMessage` | `Sending you to the hub!`                | Sent to the player who used the command during the transfer.                                                                                                 |
+| `alreadyConnectedMessage` | `You are already connected to the hub!`  | Sent when the player is already on the destination server.                                                                                                   |
+| `serverNotAvailableMessage` | `The hub server is not available.`       | Sent when the destination server is unavailable or the transfer failed.                                                                                      |
+| `playerOnlyMessage` | `Only players can execute this command!` | Sent when the command is executed from the console.                                                                                                          |
 
 ### Message custom
 We support Japanese, Russian, and other languages. If there are any languages that we do not support, please let us know via GitHub issue!  

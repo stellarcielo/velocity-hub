@@ -31,6 +31,7 @@ public final class PluginConfig {
 
     static {
         DEFAULTS.put("hubServerName", "hub");
+        DEFAULTS.put("useLobbyAlias", "true");
         DEFAULTS.put("transferMessage", "Sending you to the hub!");
         DEFAULTS.put("alreadyConnectedMessage", "You are already connected to the hub!");
         DEFAULTS.put("serverNotAvailableMessage", "The hub server is not available.");
@@ -45,6 +46,10 @@ public final class PluginConfig {
 
     public String hubServerName() {
         return values.get("hubServerName");
+    }
+
+    public boolean useLobbyAlias() {
+        return values.get("useLobbyAlias").equalsIgnoreCase("true");
     }
 
     public String transferMessage() {
