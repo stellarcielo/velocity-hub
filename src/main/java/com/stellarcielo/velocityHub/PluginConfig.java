@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 import org.slf4j.Logger;
 
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public final class PluginConfig {
 
@@ -38,6 +40,9 @@ public final class PluginConfig {
         DEFAULTS.put("playerOnlyMessage", "Only players can execute this command!");
     }
 
+    // Keys written as true/false in config.json instead of text
+    private static final Set<String> BOOLEAN_KEYS = Set.of("useLobbyAlias");
+
     private final Map<String, String> values;
 
     private PluginConfig(Map<String, String> values) {
@@ -49,7 +54,7 @@ public final class PluginConfig {
     }
 
     public boolean useLobbyAlias() {
-        return values.get("useLobbyAlias").equalsIgnoreCase("true");
+        return Boolean.parseBoolean(values.get("useLobbyAlias"));
     }
 
     public String transferMessage() {
@@ -79,7 +84,7 @@ public final class PluginConfig {
 
         if (!Files.exists(configFile)) {
             JsonObject defaultConfig = new JsonObject();
-            DEFAULTS.forEach(defaultConfig::addProperty);
+            DEFAULTS.forEach((key, value) -> addDefault(defaultConfig, key, value));
             if (save(configFile, defaultConfig, logger)) {
                 logger.info("Default config created at {}", configFile.toAbsolutePath());
             }
@@ -107,13 +112,18 @@ public final class PluginConfig {
             JsonElement element = json.get(key);
 
             if (element == null || element.isJsonNull()) {
-                json.addProperty(key, entry.getValue());
+                addDefault(json, key, entry.getValue());
                 values.put(key, entry.getValue());
                 addedKeys.add(key);
-            } else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
-                values.put(key, element.getAsString());
+                continue;
+            }
+
+            boolean isBoolean = BOOLEAN_KEYS.contains(key);
+            String value = isBoolean ? readBoolean(element) : readString(element);
+            if (value != null) {
+                values.put(key, value);
             } else {
-                logger.warn("Config value \"{}\" must be a string. The default value is used instead.", key);
+                logger.warn("Config value \"{}\" must be {}. The default value is used instead.", key, isBoolean ? "true or false" : "a string");
                 values.put(key, entry.getValue());
             }
         }
@@ -124,6 +134,39 @@ public final class PluginConfig {
 
         logger.info("Config loaded successfully from {}", configFile.toAbsolutePath());
         return new PluginConfig(values);
+    }
+
+    private static void addDefault(JsonObject json, String key, String value) {
+        if (BOOLEAN_KEYS.contains(key)) {
+            json.addProperty(key, Boolean.parseBoolean(value));
+        } else {
+            json.addProperty(key, value);
+        }
+    }
+
+    private static String readString(JsonElement element) {
+        if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+            return element.getAsString();
+        }
+        return null;
+    }
+
+    // Accepts both true and "true" so configs written either way keep working
+    private static String readBoolean(JsonElement element) {
+        if (!element.isJsonPrimitive()) {
+            return null;
+        }
+        JsonPrimitive primitive = element.getAsJsonPrimitive();
+        if (primitive.isBoolean()) {
+            return String.valueOf(primitive.getAsBoolean());
+        }
+        if (primitive.isString()) {
+            String text = primitive.getAsString().trim();
+            if (text.equalsIgnoreCase("true") || text.equalsIgnoreCase("false")) {
+                return text.toLowerCase();
+            }
+        }
+        return null;
     }
 
     private static boolean save(Path configFile, JsonObject json, Logger logger) {
