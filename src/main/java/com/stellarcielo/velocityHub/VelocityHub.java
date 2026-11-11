@@ -68,11 +68,22 @@ public class VelocityHub {
     }
 
     private void registerCommands(PluginConfig config) {
-        server.getCommandManager().register(
-                server.getCommandManager().metaBuilder("hub").aliases("lobby").build(),
-                new HubCommand(server, config, logger)
-        );
-        logger.info("Commands /hub and /lobby have been registered!");
+        if (!config.useLobbyAlias()) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("hub").build(),
+                    new HubCommand(server, config, logger)
+            );
+
+            logger.info("Command /hub has been registered!");
+        }
+        if (config.useLobbyAlias()) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("hub").aliases("lobby").build(),
+                    new HubCommand(server, config, logger)
+            );
+
+            logger.info("Commands /hub and /lobby have been registered!");
+        }
     }
 
     public static class HubCommand implements SimpleCommand {
