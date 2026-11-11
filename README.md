@@ -21,7 +21,7 @@ The sites listed above are projects managed by the developer.
 | Key | Default                                  | Description                                                                                                                                                  |
 | --- |------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `hubServerName` | `hub`                                    | The destination server. **This is the server name listed in servers in velocity.toml.** (Usually the same as the server name listed in the `try=[]` brackets.) |
-| `useLobbyAlias` | `true `\|` false`                        | Use ""lobby" as an alias to "/hub" |
+| `useLobbyAlias` | `true`                                   | Whether to register `/lobby` as an alias of `/hub`. Set to `false` if another server or plugin on your network already uses `/lobby`. |
 | `transferMessage` | `Sending you to the hub!`                | Sent to the player who used the command during the transfer.                                                                                                 |
 | `alreadyConnectedMessage` | `You are already connected to the hub!`  | Sent when the player is already on the destination server.                                                                                                   |
 | `serverNotAvailableMessage` | `The hub server is not available.`       | Sent when the destination server is unavailable or the transfer failed.                                                                                      |

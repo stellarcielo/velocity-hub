@@ -6,6 +6,7 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.proxy.ConnectionRequestBuilder;
@@ -68,22 +69,13 @@ public class VelocityHub {
     }
 
     private void registerCommands(PluginConfig config) {
-        if (!config.useLobbyAlias()) {
-            server.getCommandManager().register(
-                    server.getCommandManager().metaBuilder("hub").build(),
-                    new HubCommand(server, config, logger)
-            );
-
-            logger.info("Command /hub has been registered!");
-        }
+        CommandMeta.Builder meta = server.getCommandManager().metaBuilder("hub");
         if (config.useLobbyAlias()) {
-            server.getCommandManager().register(
-                    server.getCommandManager().metaBuilder("hub").aliases("lobby").build(),
-                    new HubCommand(server, config, logger)
-            );
-
-            logger.info("Commands /hub and /lobby have been registered!");
+            meta.aliases("lobby");
         }
+
+        server.getCommandManager().register(meta.build(), new HubCommand(server, config, logger));
+        logger.info(config.useLobbyAlias() ? "Commands /hub and /lobby have been registered!" : "Command /hub has been registered!");
     }
 
     public static class HubCommand implements SimpleCommand {
