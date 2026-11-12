@@ -1,6 +1,9 @@
 name: Build and Release
 
-on: workflow_dispatch
+on:
+  push:
+    tags: ["*SNAPSHOT"]
+  workflow_dispatch:
 
 jobs:
   buildAndRelease:
